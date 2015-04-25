@@ -2,7 +2,17 @@
 <resources>
 
     <string name="app_name">AndroidSearcher</string>
+    <string name="help_for_spinner">Выберите координаты</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="start_res">Начать</string>
+    <string name="stop_res">Остановить</string>
+    <string name="map_dwn_str">Загрузить карту</string>
+    <string name="max_type">max RSSI</string>
+    <string name="min_type">min RSSI</string>
+    <string name="ave_type">ave RSSI</string>
+    <string name="help_max">Выбраны максимальные RSSI</string>
+    <string name="help_ave">Выбраны средние RSSI</string>
+    <string name="help_min">Выбраны минимальные RSSI</string>
+    <string name="type_of_RSSI">Укажите тип RSSI</string>
 
 </resources>
