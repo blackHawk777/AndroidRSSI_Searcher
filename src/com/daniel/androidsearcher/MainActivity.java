@@ -2,6 +2,7 @@ package com.daniel.androidsearcher;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +19,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -33,7 +34,7 @@ import com.daniel.wifiworker.ScannerWiFi;
 public class MainActivity extends Activity {
 	
 	
-	private ImageView mapView;
+	//private ImageView mapView;
     int x=0;
     int y=0;
     private BitmapWorker bitmapWorker = new BitmapWorker();
@@ -49,7 +50,7 @@ public class MainActivity extends Activity {
     Boolean isFirst = true;
     Button buttonStart;
     Button buttonStop;
-    //TextView helpView;
+    TextView helpView;
     int testValue=0;
     WifiManager wifi;
     ScannerWiFi wifiThread;
@@ -68,10 +69,17 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		mapView = (ImageView)findViewById(R.id.map_img_view);
+		pointsView = (Spinner)findViewById(R.id.points_view);
+		try {
+			configureSpinner();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		//mapView = (ImageView)findViewById(R.id.map_img_view);
         buttonStart = (Button)findViewById(R.id.button1);
         buttonStop = (Button)findViewById(R.id.button2);
-        //helpView = (TextView)findViewById(R.id.textHelp);
+        helpView = (TextView)findViewById(R.id.textHelp);
         tv = (TextView)findViewById(R.id.textView1);
         linearLayoutForSSID = (LinearLayout)findViewById(R.id.linearLayoutForSSID);
         scanResults = new ArrayList<ScanResult>();
@@ -98,7 +106,7 @@ public class MainActivity extends Activity {
 	                    int idNumber = 0;
 	                    for (ScanResult sr : scanResults) {
 	                        CheckBox checkBox = new CheckBox(myContext);
-	                        checkBox.setText(sr.SSID);
+	                        checkBox.setText("MAC: " + sr.BSSID + " SSID: " + sr.SSID);
 	                        checkBox.setId(++idNumber);
 	                        linearLayoutForSSID.addView(checkBox);
 
@@ -143,24 +151,13 @@ public class MainActivity extends Activity {
                 {
                     isStopped=true;
                     resultString="";
-                   // String[] splitedItem=((String)pointsView.getSelectedItem()).split(",");
-                    //resultString+="INSERT INTO Points VALUES (" +splitedItem[0]+ "," +splitedItem[1]+ calculateCoordinats(wifiPoints, type_signal) + "); \n";
-                    resultString+="INSERT INTO Points VALUES ("+ x + "," + y  + calculateCoordinats(wifiPoints, type_signal) + "); \n";
+                    String[] splitedItem=((String)pointsView.getSelectedItem()).split(",");
+                    resultString+="INSERT INTO Points VALUES (" +splitedItem[0]+ "," +splitedItem[1]+ calculateCoordinats(wifiPoints, type_signal) + "); \n";
+                    //resultString+="INSERT INTO Points VALUES ("+ x + "," + y  + calculateCoordinats(wifiPoints, type_signal) + "); \n";
                     fw.recordToFile(resultString);
                     testValue=0;
 
                 }
-				
-				 if(!calculatingThread.isInterrupted())
-	                {
-	                    try{
-	                        calculatingThread.interrupt();
-	                    }
-	                    catch (Exception e)
-	                    {
-	                        e.printStackTrace();
-	                    }
-	                }
 				
 			}
 		});
@@ -178,7 +175,7 @@ public class MainActivity extends Activity {
             for(ScanResult results : resultsList){
                 for(int j=0; j<wifiPoints.size(); j++){
 
-                    if(results.SSID.equals(wifiPoints.get(j))){
+                    if(results.BSSID.contentEquals(wifiPoints.get(j).subSequence(5, 22))){
 
 
                         masmeasures[j]++;
@@ -227,6 +224,11 @@ public class MainActivity extends Activity {
                 for (int i=0; i<wifiPoints.size(); i++){
                     result+= "," + min[i];
                 }
+            default:
+            	 result="";
+                 for (int i=0; i<wifiPoints.size(); i++){
+                     result+= "," + average[i];
+                 }
 
         }
 
@@ -238,15 +240,14 @@ public class MainActivity extends Activity {
     }
 	
 	
-	/*  public void configureSpinner() throws IOException {
-    arrayListPoints=fw.readPointsFile(file);
-    // ArrayAdapter<?> arrayAdapter = ArrayAdapter.createFromResource(myContext, R.array.points_items,R.layout.support_simple_spinner_dropdown_item);
-    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(myContext, android.R.layout.simple_spinner_dropdown_item,arrayListPoints);
-    arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    pointsView.setAdapter(arrayAdapter);
-    pointsView.setPromptId(R.string.help_for_spinner);
+	public void configureSpinner() throws IOException {
+	    arrayListPoints=fw.readPointsFile(file);
+	    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(myContext, android.R.layout.simple_spinner_dropdown_item,arrayListPoints);
+	    arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	    pointsView.setAdapter(arrayAdapter);
+	    pointsView.setPromptId(R.string.help_for_spinner);
 }
-*/
+
 	
 	
 
@@ -277,15 +278,15 @@ public class MainActivity extends Activity {
              type_signal=3;
              Toast.makeText(myContext, R.string.help_min,Toast.LENGTH_LONG).show();
              return  true;
-         case R.id.map_menu_item:
+       /*  case R.id.map_menu_item:
              // получить картинку
              try {
                  mapView.setImageBitmap(bitmapWorker.pictureToBitmap(file));
                  mapView.setOnTouchListener(new View.OnTouchListener() {
                      @Override
                      public boolean onTouch(View v, MotionEvent event) {
-                         x=(int)v.getX();
-                         y=(int)v.getY();
+                         x=(int)event.getX();
+                         y=(int)event.getY();
                          Toast.makeText(myContext, "X = " + x + " Y = " + y +"", Toast.LENGTH_SHORT).show();
                          return false;
                      }
@@ -294,6 +295,7 @@ public class MainActivity extends Activity {
                  e.printStackTrace();
              }
              return true;
+             */
 		}
 		return super.onOptionsItemSelected(item);
 	}
