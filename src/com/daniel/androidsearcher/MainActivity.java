@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,8 +28,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daniel.androidsearcher.R;
 import com.daniel.bitmapworker.BitmapWorker;
 import com.daniel.fileworker.FileWorker;
+import com.daniel.model.RSSIModel;
+import com.daniel.senderserver.SenderServerTask;
 import com.daniel.wifiworker.ScannerWiFi;
 
 public class MainActivity extends Activity {
@@ -42,15 +46,20 @@ public class MainActivity extends Activity {
     private Integer type_signal=0;
     private File file;
     private ArrayList<String> arrayListPoints = new ArrayList<String>();
-    private final static String FILE_NAME_SIGNALS="WiFiRecords.txt";
+    private ArrayList<String> sqlStrings = new ArrayList<String>();
     private final static String RESULT_DIR="/SearcherData";
     String resultString="";
+    String[] rssi_points;
     TextView tv;
     Boolean isStopped=true;
     Boolean isFirst = true;
     Button buttonStart;
     Button buttonStop;
     TextView helpView;
+    String create_query;
+    private final static String WIFI_RECORDS="WiFiRecords.txt";
+    private final static String POINT_FILE="points.txt";
+    private RSSIModel rssiModel = new RSSIModel();
     int testValue=0;
     WifiManager wifi;
     ScannerWiFi wifiThread;
@@ -83,7 +92,7 @@ public class MainActivity extends Activity {
         tv = (TextView)findViewById(R.id.textView1);
         linearLayoutForSSID = (LinearLayout)findViewById(R.id.linearLayoutForSSID);
         scanResults = new ArrayList<ScanResult>();
-        fw.createFile(FILE_NAME_SIGNALS, RESULT_DIR);
+        fw.createFile(WIFI_RECORDS, RESULT_DIR);
         wifi = (WifiManager)getSystemService(service);
         wifiThread = new ScannerWiFi(wifi);
         calculatingThread= new Thread(wifiThread);
@@ -151,12 +160,39 @@ public class MainActivity extends Activity {
                 {
                     isStopped=true;
                     resultString="";
+                    int switcher=0;
+                    int rssi_name_pos=28;
                     String[] splitedItem=((String)pointsView.getSelectedItem()).split(",");
-                    resultString+="INSERT INTO Points VALUES (" +splitedItem[0]+ "," +splitedItem[1]+ calculateCoordinats(wifiPoints, type_signal) + "); \n";
+                    rssi_points = new String[wifiPoints.size()];
+                    for(int i=0; i<wifiPoints.size();i++)
+                    {
+                    	rssi_points[i]=wifiPoints.get(i).substring(rssi_name_pos);
+                    }
+                   /* rssi_names=wifiPoints.get(0).substring(rssi_name_pos) +"," + wifiPoints.get(1).substring(rssi_name_pos)
+                    		+ "," +wifiPoints.get(2).substring(rssi_name_pos) + "," + wifiPoints.get(3).substring(rssi_name_pos) + ","
+                    		+ wifiPoints.get(4).substring(rssi_name_pos) + "\n";
+                    
+                    for (int j=0; j<rssi_points.length;j++)
+                    {
+                    	//resultString+=rssi_points[j] +",";
+                    	resultString=rssi_points[j];
+                    }
+                    */
+                   
+                    	create_query="CREATE TABLE IF NOT EXISTS RSSI (id INTEGER PRIMARY KEY AUTO_INCREMENT, x NUMERIC, y NUMERIC, " + rssi_points[0] + " NUMERIC," + rssi_points[1] + " NUMERIC," + rssi_points[2] + " NUMERIC," + rssi_points[3] +" NUMERIC," + rssi_points[4] + " NUMERIC);";
+                    	resultString+="\n" + "INSERT INTO RSSI VALUES (" +splitedItem[0]+ "," +splitedItem[1]+ calculateCoordinats(wifiPoints, type_signal) + "); \n";
+                    	if(fw.readFile(RESULT_DIR, WIFI_RECORDS))
+						{
+							fw.recordToFile(create_query);
+						}
+						else
+						{
+							fw.recordToFile(resultString);
+						}
                     //resultString+="INSERT INTO Points VALUES ("+ x + "," + y  + calculateCoordinats(wifiPoints, type_signal) + "); \n";
-                    fw.recordToFile(resultString);
+                    
                     testValue=0;
-
+                   
                 }
 				
 			}
@@ -241,7 +277,7 @@ public class MainActivity extends Activity {
 	
 	
 	public void configureSpinner() throws IOException {
-	    arrayListPoints=fw.readPointsFile(file);
+	    arrayListPoints=fw.readPointsFile(file, POINT_FILE);
 	    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(myContext, android.R.layout.simple_spinner_dropdown_item,arrayListPoints);
 	    arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    pointsView.setAdapter(arrayAdapter);
@@ -266,6 +302,7 @@ public class MainActivity extends Activity {
 		int id = item.getItemId();
 		
 		 switch (id) {
+		 
          case R.id.action_max_type:
              type_signal=1;
              Toast.makeText(myContext, R.string.help_max,Toast.LENGTH_LONG).show();
@@ -278,6 +315,17 @@ public class MainActivity extends Activity {
              type_signal=3;
              Toast.makeText(myContext, R.string.help_min,Toast.LENGTH_LONG).show();
              return  true;
+         case R.id.send_to_server:
+        	 // вызов AsyncTask
+        	 try {
+        		  rssiModel.setRssiModels(fw.readPointsFile(file, WIFI_RECORDS));
+				//new SenderServerTask().execute(rssiModel);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	 return true;
+        	 
        /*  case R.id.map_menu_item:
              // получить картинку
              try {
@@ -299,4 +347,6 @@ public class MainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
 }
+

@@ -15,5 +15,8 @@
 
     <item android:id="@+id/action_ave_type" android:title="@string/ave_type"
         android:orderInCategory="100" android:showAsAction="never" />
+    
+    <item android:id="@+id/send_to_server" android:title="@string/send_server_rssi" 
+        android:orderInCategory="100" android:showAsAction="never"/>
 
 </menu>

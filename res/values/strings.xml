@@ -14,5 +14,6 @@
     <string name="help_ave">Выбраны средние RSSI</string>
     <string name="help_min">Выбраны минимальные RSSI</string>
     <string name="type_of_RSSI">Укажите тип RSSI</string>
+    <string name="send_server_rssi">Отправить</string>
 
 </resources>
