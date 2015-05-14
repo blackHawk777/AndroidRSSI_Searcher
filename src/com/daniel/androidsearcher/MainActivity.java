@@ -181,7 +181,10 @@ public class MainActivity extends Activity {
                     }
                     */
                     	if (isFirstRecord){
-                    		create_query="CREATE TABLE IF NOT EXISTS RSSI (id INTEGER PRIMARY KEY AUTO_INCREMENT, x NUMERIC, y NUMERIC, " + rssi_points[0] + " NUMERIC," + rssi_points[1] + " NUMERIC," + rssi_points[2] + " NUMERIC," + rssi_points[3] +" NUMERIC," + rssi_points[4] + " NUMERIC);";
+                    		create_query="CREATE TABLE IF NOT EXISTS RSSI (id INTEGER PRIMARY KEY AUTO_INCREMENT, x NUMERIC, y NUMERIC";
+                    	for(int i=0;i<rssi_points.length;i++)
+                    		create_query+="," + rssi_points[i] + " NUMERIC";
+                    	 create_query+=");";
                     		fw.recordToFile(create_query);
                     		isFirstRecord=false;
                     	}                    	
@@ -200,11 +203,26 @@ public class MainActivity extends Activity {
 	protected String calculateCoordinats(ArrayList<String> wifiPoints, Integer type_signal){
         //String[] wifiPoints={"ADSL_Wireless","NIRVANA","Sha_virus","VANO"};
         //String[] wifiPoints2={"VANO","andreiru","DIR-300NRU","DIR-620"};
-        int[] min = {0,0,0,0,0};
+       /* int[] min = {0,0,0,0,0};
         int[] max= {300,300,300,300,300};
         int[] sum= {0,0,0,0,0};
         int[]masmeasures={1,1,1,1,1};
         int[] average= {0,0,0,0,0};
+        */
+		int[] min= new int[wifiPoints.size()];
+        int[] max = new int[wifiPoints.size()];
+        int[] sum = new int[wifiPoints.size()];
+        int[]masmeasures = new int[wifiPoints.size()];
+        int[] average=new int[wifiPoints.size()];
+        for (int i=0;i<wifiPoints.size();i++)
+        {
+        	min[i]=0;
+        	max[i]=300;
+        	sum[i]=0;
+        	masmeasures[i]=1;
+        	average[i]=0;
+        }
+
         for (List<ScanResult> resultsList : listOfResults){
             for(ScanResult results : resultsList){
                 for(int j=0; j<wifiPoints.size(); j++){
