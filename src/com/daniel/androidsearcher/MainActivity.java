@@ -53,6 +53,7 @@ public class MainActivity extends Activity {
     TextView tv;
     Boolean isStopped=true;
     Boolean isFirst = true;
+    
     Button buttonStart;
     Button buttonStop;
     TextView helpView;
@@ -73,6 +74,7 @@ public class MainActivity extends Activity {
     private Spinner pointsView;
     Boolean isContinue=false;
     public FileWorker fw = new FileWorker();
+    private boolean isFirstRecord=true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -178,17 +180,13 @@ public class MainActivity extends Activity {
                     	resultString=rssi_points[j];
                     }
                     */
-                   
-                    	create_query="CREATE TABLE IF NOT EXISTS RSSI (id INTEGER PRIMARY KEY AUTO_INCREMENT, x NUMERIC, y NUMERIC, " + rssi_points[0] + " NUMERIC," + rssi_points[1] + " NUMERIC," + rssi_points[2] + " NUMERIC," + rssi_points[3] +" NUMERIC," + rssi_points[4] + " NUMERIC);";
+                    	if (isFirstRecord){
+                    		create_query="CREATE TABLE IF NOT EXISTS RSSI (id INTEGER PRIMARY KEY AUTO_INCREMENT, x NUMERIC, y NUMERIC, " + rssi_points[0] + " NUMERIC," + rssi_points[1] + " NUMERIC," + rssi_points[2] + " NUMERIC," + rssi_points[3] +" NUMERIC," + rssi_points[4] + " NUMERIC);";
+                    		fw.recordToFile(create_query);
+                    		isFirstRecord=false;
+                    	}                    	
                     	resultString+="\n" + "INSERT INTO RSSI VALUES (" +splitedItem[0]+ "," +splitedItem[1]+ calculateCoordinats(wifiPoints, type_signal) + "); \n";
-                    	if(fw.readFile(RESULT_DIR, WIFI_RECORDS))
-						{
-							fw.recordToFile(create_query);
-						}
-						else
-						{
 							fw.recordToFile(resultString);
-						}
                     //resultString+="INSERT INTO Points VALUES ("+ x + "," + y  + calculateCoordinats(wifiPoints, type_signal) + "); \n";
                     
                     testValue=0;
