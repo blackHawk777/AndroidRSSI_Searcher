@@ -60,6 +60,7 @@ public class MainActivity extends Activity {
     String resultString="";
     String[] rssi_points;
     TextView tv;
+    int sqlQueryid=0;
     Boolean isStopped=true;
     Boolean isFirst = true;
     SenderServerTask task;
@@ -171,7 +172,6 @@ public class MainActivity extends Activity {
                 {
                     isStopped=true;
                     resultString="";
-                    int switcher=0;
                     int rssi_name_pos=28;
                     String[] splitedItem=((String)pointsView.getSelectedItem()).split(",");
                     rssi_points = new String[wifiPoints.size()];
@@ -197,7 +197,7 @@ public class MainActivity extends Activity {
                     		fw.recordToFile(create_query);
                     		isFirstRecord=false;
                     	}                    	
-                    	resultString+="\n" + "INSERT INTO RSSI VALUES (" +splitedItem[0]+ "," +splitedItem[1]+ calculateCoordinats(wifiPoints, type_signal) + ");";
+                    	resultString+="\n" + "INSERT INTO RSSI VALUES (" + ++sqlQueryid +"," +splitedItem[0]+ "," +splitedItem[1]+ calculateCoordinats(wifiPoints, type_signal) + ");";
 							fw.recordToFile(resultString);
                     //resultString+="INSERT INTO Points VALUES ("+ x + "," + y  + calculateCoordinats(wifiPoints, type_signal) + "); \n";
                     
