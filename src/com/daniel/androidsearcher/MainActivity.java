@@ -3,8 +3,17 @@ package com.daniel.androidsearcher;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -53,7 +62,7 @@ public class MainActivity extends Activity {
     TextView tv;
     Boolean isStopped=true;
     Boolean isFirst = true;
-    
+    SenderServerTask task;
     Button buttonStart;
     Button buttonStop;
     TextView helpView;
@@ -335,7 +344,8 @@ public class MainActivity extends Activity {
         	 // גûחמג AsyncTask
         	 try {
         		  rssiModel.setRssiModels(fw.readPointsFile(file, WIFI_RECORDS));
-				//new SenderServerTask().execute(rssiModel);
+        		  task=new SenderServerTask();
+        		  task.execute(rssiModel);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -362,6 +372,47 @@ public class MainActivity extends Activity {
              */
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public class SenderServerTask extends AsyncTask<RSSIModel , Void, Void> {
+		int counter=0;
+		private final static String URI = "http://webmapserveropenshift-municipalpayment.rhcloud.com/WebMaps/rssidata";
+		HttpClient httpClient = new DefaultHttpClient();
+		HttpPost post = new HttpPost(URI);
+		
+		
+		@Override
+		protected Void doInBackground(RSSIModel... model) {
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(model[0].getRssiModels().size());
+			for (int i = 0; i <model[0].getRssiModels().size() ; i++) {
+				nameValuePairs.add(new BasicNameValuePair("sql" + Integer.toString(counter++) + "", model[0].getRssiModels().get(i)));
+			}
+			try {
+				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				httpClient.execute(post);
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			Toast.makeText(myContext,"",Toast.LENGTH_SHORT).show();
+		}
+		
+
 	}
 	
 }

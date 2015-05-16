@@ -18,6 +18,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.daniel.model.RSSIModel;
 
@@ -51,8 +52,6 @@ public class SenderServerTask extends AsyncTask<RSSIModel , Void, Void> {
 		
 		return null;
 	}
-	
-	
 	
 
 }
