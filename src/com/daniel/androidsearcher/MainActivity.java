@@ -197,7 +197,7 @@ public class MainActivity extends Activity {
                     		fw.recordToFile(create_query);
                     		isFirstRecord=false;
                     	}                    	
-                    	resultString+="\n" + "INSERT INTO RSSI VALUES (" +splitedItem[0]+ "," +splitedItem[1]+ calculateCoordinats(wifiPoints, type_signal) + "); \n";
+                    	resultString+="\n" + "INSERT INTO RSSI VALUES (" +splitedItem[0]+ "," +splitedItem[1]+ calculateCoordinats(wifiPoints, type_signal) + ");";
 							fw.recordToFile(resultString);
                     //resultString+="INSERT INTO Points VALUES ("+ x + "," + y  + calculateCoordinats(wifiPoints, type_signal) + "); \n";
                     
@@ -409,7 +409,7 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(Void result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
-			Toast.makeText(myContext,"",Toast.LENGTH_SHORT).show();
+			Toast.makeText(myContext,"Данные успешны отправлены",Toast.LENGTH_SHORT).show();
 		}
 		
 
