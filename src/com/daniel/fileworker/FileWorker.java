@@ -80,6 +80,7 @@ public class FileWorker {
 	    
 
 	    public ArrayList<String> readPointsFile(File file, String filename) throws IOException {
+	    	ArrayList<String> pointsList2 = new ArrayList<String>();
 	        file = Environment.getExternalStorageDirectory();
 	        file = new File(file.getAbsolutePath() + DIRECTORY);
 	        File points = new File(file, filename);
@@ -95,7 +96,7 @@ public class FileWorker {
 	        	String result="";
 	            try {
 	                while ((result = br.readLine()) != null) {
-	                    pointsList.add(new String(result));
+	                    pointsList2.add(new String(result));
 	                }
 	                br.close();
 	            	            }
@@ -103,7 +104,7 @@ public class FileWorker {
 	                e.printStackTrace();
 	            }
 	        }
-	        return pointsList;
+	        return pointsList2;
 	    }
 
 	
