@@ -330,15 +330,15 @@ public class MainActivity extends Activity {
 		 
          case R.id.action_max_type:
              type_signal=1;
-             Toast.makeText(myContext, R.string.help_max,Toast.LENGTH_LONG).show();
+             Toast.makeText(myContext, R.string.help_max,Toast.LENGTH_SHORT).show();
              return true;
          case R.id.action_ave_type:
              type_signal=2;
-             Toast.makeText(myContext, R.string.help_ave,Toast.LENGTH_LONG).show();
+             Toast.makeText(myContext, R.string.help_ave,Toast.LENGTH_SHORT).show();
              return true;
          case R.id.action_min_type:
              type_signal=3;
-             Toast.makeText(myContext, R.string.help_min,Toast.LENGTH_LONG).show();
+             Toast.makeText(myContext, R.string.help_min,Toast.LENGTH_SHORT).show();
              return  true;
          case R.id.send_to_server:
         	 // גûחמג AsyncTask

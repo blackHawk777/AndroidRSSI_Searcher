@@ -2,10 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.daniel.androidsearcher.MainActivity" >
 
-   
-    
-    <item android:id="@+id/map_menu_item" android:title="@string/map_dwn_str"
-        android:orderInCategory="100" android:showAsAction="never" />
 
     <item android:id="@+id/action_max_type" android:title="@string/max_type"
         android:orderInCategory="100" android:showAsAction="never" />
