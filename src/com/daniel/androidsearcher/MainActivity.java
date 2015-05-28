@@ -41,7 +41,6 @@ import com.daniel.androidsearcher.R;
 import com.daniel.bitmapworker.BitmapWorker;
 import com.daniel.fileworker.FileWorker;
 import com.daniel.model.RSSIModel;
-import com.daniel.senderserver.SenderServerTask;
 import com.daniel.wifiworker.ScannerWiFi;
 
 public class MainActivity extends Activity {
